@@ -1,0 +1,23 @@
+#! /bin/bash
+
+if [ "$(whoami)" != 'root' ]; then
+   echo "This script must be run as root. Use \"sudo\" to accomplish this." 1>&2
+   exit 1
+fi
+
+apt-get install mono-complete
+adduser —disabled-login terraria
+cd /opt
+wget -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip
+unzip tshock.zip -d tshock
+rm tshock.zip
+chown terraria: tshock
+chmod -R 700 tshock    # for security of the database
+mkdir /etc/tshock
+chown terraria: /etc/tshock
+chown -R 644 /etc/tshock
+
+# Write default server.conf to /etc/tshock
+# Write tshock init script to init.d, and run update-rc.d
+
+echo “Installation complete! You can start your server now by typing \”sudo service tshock start\”.” 
