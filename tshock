@@ -117,11 +117,20 @@ uninstall_tshock(){
    *) echo "Please answer yes or no."; exit 2;;
   esac
 
+  stop_tshock
+
   rm -f ${SOURCEDIR} # clear top level directory of files
   rm -r -f ${SOURCEDIR}/ServerPlugins
   rm -f ${SOURCEDIR}/tshock/*.log
   rm -f ${SOURCEDIR}/tshock/auth.lck
   rm -f ${SOURCEDIR}/tshock/tshock.sqlite
+
+  chown -R root: ${SOURCEDIR}
+  chown -R root: ${CONFIGDIR}
+
+  deluser terraria
+
+  apt-get remove mono-complete
 
   echo "Tshock has been uninstalled! Your worlds and configuration files are still intact at \"${SOURCEDIR}\" and\"${CONFIGDIR}\"."
 }
@@ -135,9 +144,15 @@ purge_tshock(){
    *) echo "Please answer yes or no."; exit 2;;
   esac
 
+  stop_tshock
+
   rm -r -f ${SOURCEDIR}
   rm -r -f ${CONFIGDIR}
   rm -f /run/tshock.pid
+
+  deluser terraria
+
+  apt-get purge mono-complete
 
   echo "Tshock has been uninstalled and all related files have been purged."
 }
