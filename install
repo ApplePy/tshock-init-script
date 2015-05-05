@@ -5,7 +5,7 @@ if [ "$(whoami)" != 'root' ]; then
    exit 1
 fi
 
-apt-get install mono-complete
+apt-get install mono-complete dameon -y
 adduser —disabled-login terraria
 cd /opt
 wget -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip

@@ -83,16 +83,14 @@ change_user(){
 start_tshock(){
   local result=$(check_pid)
   if [ result == "0" ]; then
-    ${SERVERBIN} -config ${SERVERCONFIG}
-    # Write PID somewhere here...
+    sudo daemon -D ${SOURCEDIR} -F ${PID} -u ${USERNAME} -n tshock ${SERVERBIN} -config ${SERVERCONFIG}
     echo "Program has started!"
   elif [ result == "1" ]; then
     echo "Program is already running!"
   elif [ result == "2" ]; then
     echo "Stale PID found! Removing..."
     rm -f ${PID}
-    ${SERVERBIN} -config ${SERVERCONFIG}
-    # Write PID somewhere here...
+    sudo daemon -D ${SOURCEDIR} -F ${PID} -u ${USERNAME} -n tshock ${SERVERBIN} -config ${SERVERCONFIG}
     echo "Program has started!"
   fi
 }
@@ -104,7 +102,7 @@ stop_tshock(){
     rm -f ${PID}
     echo "Program has stopped!"
   else
-    echo "Program has encountred the error: $?"
+    echo "Program has encountered the error: $?"
   fi
 }
 
@@ -179,15 +177,15 @@ reconfigure_tshock(){
 
 case "$1" in
   start)
-    change_user
+    check_if_root
     start_tshock
     ;;
   stop)
-    change_user
+    check_if_root
     stop_tshock
     ;;
   restart)
-    change_user
+    check_if_root
     stop_tshock
     start_tshock
     ;;
