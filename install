@@ -5,19 +5,38 @@ if [ "$(whoami)" != 'root' ]; then
    exit 1
 fi
 
+## Install dependencies and create users
 apt-get install mono-complete dameon -y
 adduser —disabled-login terraria
+
+## Download and unpack binary
 cd /opt
 wget -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip
 unzip tshock.zip -d tshock
 rm tshock.zip
 chown terraria: tshock
 chmod -R 700 tshock    # for security of the database
+
+## Create and configure configuration directory
 mkdir /etc/tshock
 chown terraria: /etc/tshock
 chown -R 644 /etc/tshock
 
 # Write default server.conf to /etc/tshock
+
+if [ ! -es /etc/tshock/server.conf ]; then
+  read -d '' contents <<- EOF
+    maxplayers=8
+    world=./Terraria/Worlds/Scott_and_Addy.wld
+    port=7777
+    secure=1
+  EOF
+fi
+
+echo "$contents” > /etc/tshock/server.conf
+
+
+
 # Write tshock init script to init.d, and run update-rc.d
 
 echo “Installation complete! You can start your server now by typing \”sudo service tshock start\”.” 
