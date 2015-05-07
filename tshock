@@ -129,7 +129,7 @@ uninstall_tshock(){
 
   deluser terraria
 
-  apt-get remove mono-complete dameon -y
+  apt-get remove mono-complete daemon -y
 
   echo "Tshock has been uninstalled! Your worlds and configuration files are still intact at \"${SOURCEDIR}\" and\"${CONFIGDIR}\"."
 
@@ -154,7 +154,7 @@ purge_tshock(){
 
   deluser terraria
 
-  apt-get purge mono-complete dameon -y
+  apt-get purge mono-complete daemon -y
 
   echo "Tshock has been uninstalled and all related files have been purged."
   

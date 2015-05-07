@@ -93,7 +93,10 @@ echo "$contents" > /etc/tshock/server.conf
 echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!"
 
 ## Write tshock init script to init.d, and run update-rc.d
+cd ${STARTINGPATH}
+chown root: tshock
+chmod 755 tshock
 mv tshock /etc/init.d/tshock
-update-rc.d shock defaults 21
+update-rc.d tshock defaults 21
 
 echo “Installation complete! You can start your server now by typing \”sudo service tshock start\”.” 
