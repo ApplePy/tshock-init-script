@@ -8,8 +8,8 @@
 # Provides:		Terraria Server
 # Required-Start:	none
 # Required-Stop:	none
-# Default-Start:	#Figure this out#
-# Default-Stop:		#Figure this out#
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
 # Short-Description:	Allows for simple control of a Terraria server.
 # Description:		Allows for simple control of a Terraria server.
 ### END INIT INFO
@@ -83,12 +83,12 @@ change_user(){
 
 start_tshock(){
   local result=$(check_pid)
-  if [ result == "0" ]; then
+  if [ ${result} == "0" ]; then
     sudo daemon -D ${SOURCEDIR} -F ${PID} -u ${USERNAME} -n tshock ${SERVERBIN} -config ${SERVERCONFIG}
     echo "Program has started!"
-  elif [ result == "1" ]; then
+  elif [ ${result} == "1" ]; then
     echo "Program is already running!"
-  elif [ result == "2" ]; then
+  elif [ ${result} == "2" ]; then
     echo "Stale PID found! Removing..."
     rm -f ${PID}
     sudo daemon -D ${SOURCEDIR} -F ${PID} -u ${USERNAME} -n tshock ${SERVERBIN} -config ${SERVERCONFIG}
