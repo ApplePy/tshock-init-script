@@ -61,7 +61,7 @@ cd ${STARTINGPATH}    # Return to starting directory to not mess things up
 echo "Making program directories..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 mkdir /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chown -R terraria: /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chown -R 644 /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chmod -R 644 /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 
 
 LOOPCONTROL=true
@@ -89,7 +89,7 @@ done
 
 
 ## Write default server.conf to /etc/tshock
-if [ ! -s /etc/tshock/server.conf ]; then
+if [ ! -s ${SERVERCONFIG} ]; then
 contents="maxplayers=8
 worldpath=./Terraria/Worlds/
 port=7777
@@ -99,17 +99,18 @@ password=${PASSWORD}
 secure=1"
 fi
 
-sh -c "echo \"$contents\" > /etc/tshock/server.conf" >> ${STARTINGPATH}/InstallLog.txt 2>&1
-ln -s /etc/tshock/server.conf ${SOURCEDIR}/server.conf >> ${STARTINGPATH}/InstallLog.txt 2>&1
+sh -c "echo \"{$contents}\" > ${SERVERCONFIG}" >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chown terraria: ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chmod o-r ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
+ln -s ${SERVERCONFIG} ${SOURCEDIR}/server.conf >> ${STARTINGPATH}/InstallLog.txt 2>&1
 
 echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!" 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 
 ## Write tshock init script to init.d, and run update-rc.d
 echo "Configuring server to automatically restart..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
-cd ${STARTINGPATH} >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chown root: tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chmod 755 tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 cp tshock /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chown root: /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chmod 755 /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 update-rc.d tshock defaults 21 >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 
 echo "Installation complete! You can start your server now by typing \"sudo service tshock start\"." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
