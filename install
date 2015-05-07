@@ -80,7 +80,7 @@ done
 ## Write default server.conf to /etc/tshock
 if [ ! -s /etc/tshock/server.conf ]; then
 contents="maxplayers=8
-worldpath=${SOURCEDIR}/Terraria/Worlds/
+worldpath=./Terraria/Worlds/
 port=7777
 autocreate=${size}
 worldname=autocreated_world
@@ -89,6 +89,7 @@ secure=1"
 fi
 
 echo "$contents" > /etc/tshock/server.conf
+ln -s /etc/tshock/server.conf ${SOURCEDIR}/server.conf
 
 echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!"
 
