@@ -35,7 +35,7 @@ CONFIGDIR=/etc/tshock
 SERVERCONFIG=${CONFIGDIR}/server.conf
 
 # PID
-PID=/run/tshock.pid
+PID=/${SOURCEDIR}/tshock.pid
 
 # Current User
 ME=$(whoami)
