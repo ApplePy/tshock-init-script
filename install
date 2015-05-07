@@ -40,7 +40,7 @@ fi
 
 ## Install dependencies and create users
 apt-get install mono-complete dameon -y
-adduser —disabled-login terraria
+adduser --disabled-login terraria
 
 ## Download and unpack binary
 cd /opt
