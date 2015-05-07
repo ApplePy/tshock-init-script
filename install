@@ -39,8 +39,8 @@ if [ ! -e ./tshock ]; then
 fi
 
 ## Install dependencies and create users
-apt-get install mono-complete dameon -y
-adduser --disabled-login terraria
+apt-get install mono-complete daemon -y
+adduser --disabled-login --no-create-home --gecos "terraria" terraria
 
 ## Download and unpack binary
 cd /opt
