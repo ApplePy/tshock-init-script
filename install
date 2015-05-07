@@ -33,7 +33,7 @@ if [ "$(whoami)" != 'root' ]; then
 fi
 
 ## Check to ensure tshock init file is available
-if [ ! -e ./tshock ] then
+if [ ! -e ./tshock ]; then
   echo "Cannot continue! The init script \"tshock\" is missing! Please copy this file to the same directory as this install script to continue."
   exit 1
 fi
