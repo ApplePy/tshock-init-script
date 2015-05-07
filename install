@@ -52,7 +52,7 @@ cd /opt   # WARNING: THIS WILL MESS UP PATHS IF NOT CAREFUL
 wget --progress=bar:force -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 unzip tshock.zip -d tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 rm tshock.zip >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chown terraria: tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chown -R terraria: tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod -R 700 tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1   # for security of the database
 
 cd ${STARTINGPATH}    # Return to starting directory to not mess things up 
@@ -60,7 +60,7 @@ cd ${STARTINGPATH}    # Return to starting directory to not mess things up
 ## Create and configure configuration directory
 echo "Making program directories..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 mkdir /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chown terraria: /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chown -R terraria: /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chown -R 644 /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 
 
