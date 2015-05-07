@@ -99,7 +99,7 @@ password=${PASSWORD}
 secure=1"
 fi
 
-sh -c "echo \"{$contents}\" > ${SERVERCONFIG}" >> ${STARTINGPATH}/InstallLog.txt 2>&1
+sh -c "echo \"${contents}\" > ${SERVERCONFIG}" >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chown terraria: ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod o-r ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
 ln -s ${SERVERCONFIG} ${SOURCEDIR}/server.conf >> ${STARTINGPATH}/InstallLog.txt 2>&1
