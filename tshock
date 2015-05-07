@@ -20,6 +20,7 @@
 # Make the necessary changes in /etc/tshock instead.
 ###
 
+## Note: these variables are used in the install script as well. Update in both.
 # Username
 USERNAME=terraria
 
@@ -128,7 +129,7 @@ uninstall_tshock(){
 
   deluser terraria
 
-  apt-get remove mono-complete
+  apt-get remove mono-complete dameon -y
 
   echo "Tshock has been uninstalled! Your worlds and configuration files are still intact at \"${SOURCEDIR}\" and\"${CONFIGDIR}\"."
 }
@@ -150,7 +151,7 @@ purge_tshock(){
 
   deluser terraria
 
-  apt-get purge mono-complete
+  apt-get purge mono-complete dameon -y
 
   echo "Tshock has been uninstalled and all related files have been purged."
 }

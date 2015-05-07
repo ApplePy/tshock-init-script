@@ -1,5 +1,31 @@
 #! /bin/bash
 
+# Default server password
+PASSWORD=defaultpassword
+
+## Note: these variables are used in the init script as well. Update in both.
+# Username
+USERNAME=terraria
+
+# Terraria Directory
+SOURCEDIR=/opt/tshock
+
+# Server executable
+SERVERBIN=${SOURCEDIR}/TerrariaServer.exe
+
+# Server Config
+CONFIGDIR=/etc/tshock
+SERVERCONFIG=${CONFIGDIR}/server.conf
+
+# PID
+PID=/run/tshock.pid
+
+# Current User
+ME=$(whoami)
+
+# Original Arguments
+ARGS=$@
+
 if [ "$(whoami)" != 'root' ]; then
    echo "This script must be run as root. Use \"sudo\" to accomplish this." 1>&2
    exit 1
@@ -22,20 +48,42 @@ mkdir /etc/tshock
 chown terraria: /etc/tshock
 chown -R 644 /etc/tshock
 
-# Write default server.conf to /etc/tshock
 
-if [ ! -es /etc/tshock/server.conf ]; then
-  read -d '' contents <<- EOF
-    maxplayers=8
-    world=./Terraria/Worlds/Scott_and_Addy.wld
-    port=7777
-    secure=1
-  EOF
+LOOPCONTROL=true
+while [ ${LOOPCONTROL} == true ]
+do
+  read -p "Do you want the default world size to be small(1), medium(2), or large(3)? Enter 1, 2, or 3: " size
+  case $size in
+    1)
+      LOOPCONTROL=false
+      ;;
+    2)
+      LOOPCONTROL=false
+      ;;
+    3)
+      LOOPCONTROL=false
+      ;;
+    *)
+      echo "Please answer with \"1\", \"2\", or \"3\"."
+      ;;
+  esac
+done
+
+
+# Write default server.conf to /etc/tshock
+if [ ! -s /etc/tshock/server.conf ]; then
+contents="maxplayers=8
+worldpath=${SOURCEDIR}/Terraria/Worlds/
+port=7777
+autocreate=${size}
+worldname=autocreated_world
+password=${PASSWORD}
+secure=1"
 fi
 
-echo "$contents” > /etc/tshock/server.conf
+echo "$contents" > /etc/tshock/server.conf
 
-
+echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!"
 
 # Write tshock init script to init.d, and run update-rc.d
 
