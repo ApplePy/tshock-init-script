@@ -132,6 +132,9 @@ uninstall_tshock(){
   apt-get remove mono-complete dameon -y
 
   echo "Tshock has been uninstalled! Your worlds and configuration files are still intact at \"${SOURCEDIR}\" and\"${CONFIGDIR}\"."
+
+  rm -f /etc/init.d/$0
+  update-rc.d tshock remove
 }
 
 purge_tshock(){
@@ -154,6 +157,9 @@ purge_tshock(){
   apt-get purge mono-complete dameon -y
 
   echo "Tshock has been uninstalled and all related files have been purged."
+  
+  rm -f /etc/init.d/$0
+  update-rc.d tshock remove
 }
 
 change_world(){
