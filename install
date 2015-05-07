@@ -27,33 +27,41 @@ ME=$(whoami)
 ARGS=$@
 STARTINGPATH=$(pwd)
 
+## Add date to log file
+echo $(date) >> ${STARTINGPATH}/InstallLog.txt
+
 if [ "$(whoami)" != 'root' ]; then
-   echo "This script must be run as root. Use \"sudo\" to accomplish this." 1>&2
+   echo "This script must be run as root. Use \"sudo\" to accomplish this." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
    exit 1
 fi
 
 ## Check to ensure tshock init file is available
 if [ ! -e ./tshock ]; then
-  echo "Cannot continue! The init script \"tshock\" is missing! Please copy this file to the same directory as this install script to continue."
+  echo "Cannot continue! The init script \"tshock\" is missing! Please copy this file to the same directory as this install script to continue." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
   exit 1
 fi
 
 ## Install dependencies and create users
-apt-get install mono-complete daemon -y
-adduser --disabled-login --no-create-home --gecos "terraria" terraria
+echo "Starting installation... downloading and installing dependencies" 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
+apt-get install mono-complete daemon -y >> ${STARTINGPATH}/InstallLog.txt 2>&1
+adduser --disabled-login --no-create-home --gecos "terraria" terraria >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 
 ## Download and unpack binary
-cd /opt
-wget -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip
-unzip tshock.zip -d tshock
-rm tshock.zip
-chown terraria: tshock
-chmod -R 700 tshock    # for security of the database
+echo "Downloading binaries..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
+cd /opt   # WARNING: THIS WILL MESS UP PATHS IF NOT CAREFUL
+wget --progress=bar:force -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
+unzip tshock.zip -d tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1 
+rm tshock.zip >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chown terraria: tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chmod -R 700 tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1   # for security of the database
+
+cd ${STARTINGPATH}    # Return to starting directory to not mess things up 
 
 ## Create and configure configuration directory
-mkdir /etc/tshock
-chown terraria: /etc/tshock
-chown -R 644 /etc/tshock
+echo "Making program directories..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
+mkdir /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chown terraria: /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chown -R 644 /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 
 
 LOOPCONTROL=true
@@ -62,12 +70,15 @@ do
   read -p "Do you want the default world size to be small(1), medium(2), or large(3)? Enter 1, 2, or 3: " size
   case $size in
     1)
+      echo "Small size world chosen." >> ${STARTINGPATH}/InstallLog.txt
       LOOPCONTROL=false
       ;;
     2)
+      echo "Medium size world chosen." >> ${STARTINGPATH}/InstallLog.txt
       LOOPCONTROL=false
       ;;
     3)
+      echo "Large size world chosen." >> ${STARTINGPATH}/InstallLog.txt
       LOOPCONTROL=false
       ;;
     *)
@@ -88,16 +99,17 @@ password=${PASSWORD}
 secure=1"
 fi
 
-echo "$contents" > /etc/tshock/server.conf
-ln -s /etc/tshock/server.conf ${SOURCEDIR}/server.conf
+sh -c "echo \"$contents\" > /etc/tshock/server.conf" >> ${STARTINGPATH}/InstallLog.txt 2>&1
+ln -s /etc/tshock/server.conf ${SOURCEDIR}/server.conf >> ${STARTINGPATH}/InstallLog.txt 2>&1
 
-echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!"
+echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!" 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 
 ## Write tshock init script to init.d, and run update-rc.d
-cd ${STARTINGPATH}
-chown root: tshock
-chmod 755 tshock
-mv tshock /etc/init.d/tshock
-update-rc.d tshock defaults 21
+echo "Configuring server to automatically restart..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
+cd ${STARTINGPATH} >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chown root: tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+chmod 755 tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+cp tshock /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
+update-rc.d tshock defaults 21 >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 
-echo “Installation complete! You can start your server now by typing \”sudo service tshock start\”.” 
+echo "Installation complete! You can start your server now by typing \"sudo service tshock start\"." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
