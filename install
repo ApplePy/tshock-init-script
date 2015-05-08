@@ -49,8 +49,8 @@ adduser --disabled-login --no-create-home --gecos "terraria" terraria >> ${START
 ## Download and unpack binary
 echo "Downloading binaries..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 cd /opt   # WARNING: THIS WILL MESS UP PATHS IF NOT CAREFUL
-wget --progress=bar:force -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
-unzip tshock.zip -d tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1 
+wget --progress=bar:force -a ${STARTINGPATH}/InstallLog.txt -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip
+unzip tshock.zip -f -o -d tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 rm tshock.zip >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chown -R terraria: tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod -R 700 tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1   # for security of the database
@@ -63,33 +63,32 @@ mkdir /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chown -R terraria: /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod -R 644 /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 
-
-LOOPCONTROL=true
-while [ ${LOOPCONTROL} == true ]
-do
-  read -p "Do you want the default world size to be small(1), medium(2), or large(3)? Enter 1, 2, or 3: " size
-  case $size in
-    1)
-      echo "Small size world chosen." >> ${STARTINGPATH}/InstallLog.txt
-      LOOPCONTROL=false
-      ;;
-    2)
-      echo "Medium size world chosen." >> ${STARTINGPATH}/InstallLog.txt
-      LOOPCONTROL=false
-      ;;
-    3)
-      echo "Large size world chosen." >> ${STARTINGPATH}/InstallLog.txt
-      LOOPCONTROL=false
-      ;;
-    *)
-      echo "Please answer with \"1\", \"2\", or \"3\"."
-      ;;
-  esac
-done
-
-
 ## Write default server.conf to /etc/tshock
-if [ ! -s ${SERVERCONFIG} ]; then
+if [ ! -e ${SERVERCONFIG} ]; then
+  LOOPCONTROL=true
+  while [ ${LOOPCONTROL} == true ]
+  do
+    read -p "Do you want the default world size to be small(1), medium(2), or large(3)? Enter 1, 2, or 3: " size
+    case $size in
+      1)
+        echo "Small size world chosen." >> ${STARTINGPATH}/InstallLog.txt
+        LOOPCONTROL=false
+        ;;
+      2)
+        echo "Medium size world chosen." >> ${STARTINGPATH}/InstallLog.txt
+        LOOPCONTROL=false
+        ;;
+      3)
+        echo "Large size world chosen." >> ${STARTINGPATH}/InstallLog.txt
+        LOOPCONTROL=false
+        ;;
+      *)
+        echo "Please answer with \"1\", \"2\", or \"3\"."
+        ;;
+    esac
+  done
+
+# This needs to stay formatted with it's alignment to the far left
 contents="maxplayers=8
 worldpath=./Terraria/Worlds/
 port=7777
@@ -97,14 +96,16 @@ autocreate=${size}
 worldname=autocreated_world
 password=${PASSWORD}
 secure=1"
+  sh -c "echo \"${contents}\" > ${SERVERCONFIG}" >> ${STARTINGPATH}/InstallLog.txt 2>&1
+  chown terraria: ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
+  chmod o-r ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
+  echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!" 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
+else
+    echo "A server.conf file already exists! Please consult it for the server password."
 fi
 
-sh -c "echo \"${contents}\" > ${SERVERCONFIG}" >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chown terraria: ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chmod o-r ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
 ln -s ${SERVERCONFIG} ${SOURCEDIR}/server.conf >> ${STARTINGPATH}/InstallLog.txt 2>&1
 
-echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!" 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 
 ## Write tshock init script to init.d, and run update-rc.d
 echo "Configuring server to automatically restart..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
