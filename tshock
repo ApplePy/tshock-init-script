@@ -21,9 +21,6 @@
 ###
 
 ## Note: these variables are used in the install script as well. Update in both.
-# Username
-USERNAME=terraria
-
 # Terraria Directory
 SOURCEDIR=/opt/tshock
 
@@ -73,25 +70,17 @@ check_if_root(){
   fi
 }
 
-change_user(){
-  if [ $ME != $USERNAME ]; then
-    check_if_root
-    sudo -u ${USERNAME} bash -c "$0 $ARGS"
-    exit $?
-  fi
-}
-
 start_tshock(){
   local result=$(check_pid)
   if [ ${result} -eq 0 ]; then
-    sudo daemon -D ${SOURCEDIR} -F ${PID} -u ${USERNAME} -n tshock ${SERVERBIN} -config ${SERVERCONFIG}
+    sudo daemon -D ${SOURCEDIR} -F ${PID} -n tshock ${SERVERBIN} -config ${SERVERCONFIG}
     echo "Program has started!"
   elif [ ${result} -eq 1 ]; then
     echo "Program is already running!"
   elif [ ${result} -eq 2 ]; then
     echo "Stale PID found! Removing..."
     rm -f ${PID}
-    sudo daemon -D ${SOURCEDIR} -F ${PID} -u ${USERNAME} -n tshock ${SERVERBIN} -config ${SERVERCONFIG}
+    sudo daemon -D ${SOURCEDIR} -F ${PID} -n tshock ${SERVERBIN} -config ${SERVERCONFIG}
     echo "Program has started!"
   fi
 }
@@ -130,11 +119,6 @@ uninstall_tshock(){
   rm -f ${SOURCEDIR}/tshock/auth.lck
   rm -f ${SOURCEDIR}/tshock/tshock.sqlite
 
-  chown -R root: ${SOURCEDIR}
-  chown -R root: ${CONFIGDIR}
-
-  deluser terraria
-
   apt-get remove mono-complete daemon -y
 
   echo "Tshock has been uninstalled! Your worlds and configuration files are still intact at \"${SOURCEDIR}\" and\"${CONFIGDIR}\"."
@@ -164,8 +148,6 @@ purge_tshock(){
   rm -r -f ${CONFIGDIR}
   rm -f /run/tshock.pid
 
-  deluser terraria
-
   apt-get purge mono-complete daemon -y
 
   echo "Tshock has been uninstalled and all related files have been purged."
@@ -190,6 +172,13 @@ reconfigure_tshock(){
   echo "Reconfiguration complete!"
 }
 
+first_start_tshock(){
+  cd ${SOURCEDIR}
+  ./TerrariaServer.exe
+  cd /
+}
+
+
 
 
 ### Input
@@ -208,6 +197,11 @@ case "$1" in
     stop_tshock
     start_tshock
     ;;
+  first-start)
+    check_if_root
+    first_start_tshock
+    reconfigure_tshock
+    ;;
   uninstall) # Using root to ensure a proper uninstallation
     check_if_root
     uninstall_tshock
@@ -217,19 +211,19 @@ case "$1" in
     purge_tshock
     ;;
   change-world)
-    change_user
+    check_if_root
     change_world
     ;;
   new-world)
-    change_user
+    check_if_root
     new_world
     ;;
   reconfigure)
-    change_user
+    check_if_root
     reconfigure_tshock
     ;;
   *)
-    echo "Usage: service tshock {start|stop|restart|reconfigure|new-world|change-world|uninstall|purge"}
+    echo "Usage: service tshock {start|stop|restart|first-start|reconfigure|new-world|change-world|uninstall|purge"}
     exit 1
     ;;
 esac

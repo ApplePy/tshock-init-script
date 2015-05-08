@@ -5,7 +5,6 @@ PASSWORD=defaultpassword
 
 ## Note: these variables are used in the init script as well. Update in both.
 # Username
-USERNAME=terraria
 
 # Terraria Directory
 SOURCEDIR=/opt/tshock
@@ -44,7 +43,6 @@ fi
 ## Install dependencies and create users
 echo "Starting installation... downloading and installing dependencies" 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 apt-get install mono-complete daemon -y >> ${STARTINGPATH}/InstallLog.txt 2>&1
-adduser --disabled-login --no-create-home --gecos "terraria" terraria >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 
 ## Download and unpack binary
 echo "Downloading binaries..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
@@ -52,7 +50,6 @@ cd /opt   # WARNING: THIS WILL MESS UP PATHS IF NOT CAREFUL
 wget --progress=bar:force -a ${STARTINGPATH}/InstallLog.txt -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip
 unzip -u -o tshock.zip -d tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 rm tshock.zip >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chown -R terraria: tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod -R 700 tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1   # for security of the database
 
 cd ${STARTINGPATH}    # Return to starting directory to not mess things up 
@@ -60,7 +57,6 @@ cd ${STARTINGPATH}    # Return to starting directory to not mess things up
 ## Create and configure configuration directory
 echo "Making program directories..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 mkdir /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
-chown -R terraria: /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod -R 644 /etc/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 
 ## Write default server.conf to /etc/tshock
@@ -90,6 +86,7 @@ if [ ! -e ${SERVERCONFIG} ]; then
 
 # This needs to stay formatted with it's alignment to the far left
 contents="maxplayers=8
+world=./Terraria/Worlds/*.wld
 worldpath=./Terraria/Worlds/
 port=7777
 autocreate=${size}
@@ -97,7 +94,6 @@ worldname=autocreated_world
 password=${PASSWORD}
 secure=1"
   sh -c "echo \"${contents}\" > ${SERVERCONFIG}" >> ${STARTINGPATH}/InstallLog.txt 2>&1
-  chown terraria: ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
   chmod o-r ${SERVERCONFIG} >> ${STARTINGPATH}/InstallLog.txt 2>&1
   echo "The password set for the server is: \"${PASSWORD}\". Remember to change it in ${SERVERCONFIG}!" 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 else
@@ -114,4 +110,4 @@ chown root: /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod 755 /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 update-rc.d tshock defaults 21 >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 
-echo "Installation complete! You can start your server now by typing \"sudo service tshock start\"." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
+echo "Installation complete! You can start your server and set up your first world now by typing \"sudo service tshock first-start\". Don't forget to close the server after the world is created (there's more steps!), and remember to insert the name of the world you created into the \"*.wld\" line of the screen that appears! Start your server from then on with \"sudo service tshock start\"." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
