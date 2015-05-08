@@ -50,7 +50,7 @@ adduser --disabled-login --no-create-home --gecos "terraria" terraria >> ${START
 echo "Downloading binaries..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 cd /opt   # WARNING: THIS WILL MESS UP PATHS IF NOT CAREFUL
 wget --progress=bar:force -a ${STARTINGPATH}/InstallLog.txt -O tshock.zip https://github.com/NyxStudios/TShock/releases/download/v4.2.10/tshock_4.2.10.zip
-unzip tshock.zip -f -o -d tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1 
+unzip -u -o tshock.zip -d tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1 
 rm tshock.zip >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chown -R terraria: tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod -R 700 tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1   # for security of the database
@@ -108,7 +108,7 @@ ln -s ${SERVERCONFIG} ${SOURCEDIR}/server.conf >> ${STARTINGPATH}/InstallLog.txt
 
 
 ## Write tshock init script to init.d, and run update-rc.d
-echo "Configuring server to automatically restart..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
+echo "Configuring server to automatically start..." 2>&1 | tee -a ${STARTINGPATH}/InstallLog.txt
 cp tshock /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chown root: /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
 chmod 755 /etc/init.d/tshock >> ${STARTINGPATH}/InstallLog.txt 2>&1
